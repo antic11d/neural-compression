@@ -9,8 +9,8 @@ sys.path.insert(1, "..")
 # from modules.conv1d_builder import Conv1DBuilder
 # from modules.conv_transpose1d_builder import ConvTranspose1DBuilder
 # from speech_utils.global_conditioning import GlobalConditioning
-from modules import ResidualStack, Conv1DBuilder, ConvTranspose1DBuilder
-from code.utils.log import Logger
+from .modules import ResidualStack, Conv1DBuilder, ConvTranspose1DBuilder
+from utils.log import Logger
 import torch.nn as nn
 import torch.nn.functional as F
 

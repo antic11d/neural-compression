@@ -1,7 +1,6 @@
 import time
 import random
 import os
-import json
 import yaml
 
 
@@ -18,6 +17,6 @@ class ConfigParser:
     @staticmethod
     def parse_json_config(path):
         with open(path, "r") as f:
-            config = yaml.load(f)
+            config = yaml.safe_load(f)
 
         return config

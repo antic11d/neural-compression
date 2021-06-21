@@ -4,9 +4,9 @@ sys.path.insert(0, ".")
 sys.path.insert(1, "..")
 
 from utils.log import Logger
-from conv_encoder import ConvolutionalEncoder
-from deconv_decoder import DeconvolutionalDecoder
-from vq import VectorQuantizer
+from .conv_encoder import ConvolutionalEncoder
+from .deconv_decoder import DeconvolutionalDecoder
+from .vq import VectorQuantizer
 
 
 import torch.nn as nn
@@ -80,7 +80,7 @@ class ConvolutionalVQVAE(nn.Module):
         )
 
         self._device = device
-        self._record_codebook_stats = configuration["record_codebook_stats"]
+        # self._record_codebook_stats = configuration["record_codebook_stats"]
 
     @property
     def vq(self):

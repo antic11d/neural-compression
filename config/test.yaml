@@ -1,13 +1,25 @@
 verbose: true
 log_dir: "./logs/"
-encoder: conv
-decoder: deconv
+encoder_type: conv
+decoder_type: deconv
+
+############# Audio ############
+sampling_rate: 16000 # Sampling rate
+res_type: 'kaiser_fast' # Resampling algorithm
+top_db: 20 # The threshold (in decibels) below reference to consider as silence
+length: 7680
+##################################
+
+############# Mu-law ############
+quantize: 256
+##################################
 
 ############# Training ############
 learning_rate: 0.8
 num_epochs: 10
 batch_size: 2
 use_cuda: true
+use_speaker_conditioning: false
 ##################################
 
 ############# Encoder ############
@@ -24,7 +36,7 @@ commitment_cost: 0.25
 ##################################
 
 ############# Residual ############
-residual_connections: 768
+residual_channels: 768
 num_residual_layers: 2
 ##################################
 
