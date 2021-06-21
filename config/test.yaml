@@ -20,6 +20,8 @@ num_epochs: 10
 batch_size: 2
 use_cuda: true
 use_speaker_conditioning: false
+log_period: 1
+checkpoint_period: 1
 ##################################
 
 ############# Encoder ############

@@ -4,6 +4,7 @@ import torch
 from utils.log import Logger
 from utils.misc import ConfigParser
 from models.conv_vq_vae import ConvolutionalVQVAE
+from trainers.conv_trainer import ConvolutionalTrainer
 
 
 def main(opts):
@@ -20,10 +21,18 @@ def main(opts):
             "Decoder of type {} not implemented.".format(config["decoder_type"])
         )
 
-    print(model)
-    # TODO: trainer, dataloader
+    trainer = ConvolutionalTrainer(
+        model=model, device=device, configuration=config, optimizer_name="adam"
+    )
 
-    return None
+    # TODO: dataloader
+    dataloader = None
+    training_info = trainer.train(dataloader)
+
+    # TODO: Evaluation
+    evaluation_info = {}
+
+    return {}
 
 
 if __name__ == "__main__":
