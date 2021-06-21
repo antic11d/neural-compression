@@ -1,6 +1,8 @@
 import time
 import random
 import os
+import json
+import yaml
 
 
 def get_dirname(base_dir):
@@ -10,3 +12,12 @@ def get_dirname(base_dir):
     log_path = os.path.join(base_dir, dirname)
 
     return log_path
+
+
+class ConfigParser:
+    @staticmethod
+    def parse_json_config(path):
+        with open(path, "r") as f:
+            config = yaml.load(f)
+
+        return config

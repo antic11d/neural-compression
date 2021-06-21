@@ -1,0 +1,50 @@
+verbose: true
+log_dir: "./logs/"
+encoder: conv
+decoder: deconv
+
+############# Training ############
+learning_rate: 0.8
+num_epochs: 10
+batch_size: 2
+use_cuda: true
+##################################
+
+############# Encoder ############
+num_hiddens: 768
+input_dim: 256
+##################################
+
+############# VQ ############
+# The higher this value, the higher the capacity in the information bottleneck.
+num_embeddings: 29
+# This value is not that important, usually 64 works. This will not change the capacity in the information-bottleneck.
+embedding_dim: 64
+commitment_cost: 0.25
+##################################
+
+############# Residual ############
+residual_connections: 768
+num_residual_layers: 2
+##################################
+
+############# Conv ############
+use_kaiming_normal: false
+##################################
+
+############# Jitter ############
+jitter_probability: 0.12
+use_jitter: false
+##################################
+
+
+############# Features ############
+input_features_type: mfcc
+output_features_type: mfcc
+input_features_dim: 47
+input_features_filters: 13
+output_features_dim: 47
+output_features_filters: 13
+augment_input_features: true
+augment_output_features: true
+##################################
