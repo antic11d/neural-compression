@@ -8,24 +8,24 @@ class Logger:
     _instance = None
 
     @staticmethod
-    def get_logger(opts):
+    def get_logger(root_dir=None, quiet=False):
         if Logger._instance == None:
-            Logger(opts)
+            Logger(root_dir, quiet)
         return Logger._instance
 
-    def __init__(self, opts):
+    def __init__(self, root_dir, quiet):
         if Logger._instance != None:
             raise Exception("This class is a singleton!")
         else:
-            Logger._instance = self._initialize(opts)
+            Logger._instance = self._initialize(root_dir, quiet)
 
     def __del__(self):
         self._info_file.close()
 
-    def _initialize(self, opts):
-        self._quiet = opts.quiet
+    def _initialize(self, root_dir, quiet=False):
+        self._quiet = quiet
 
-        self._root_dir = Path(opts.base_dir)
+        self._root_dir = Path(root_dir)
         self._root_dir.mkdir(exist_ok=True)
 
         self._checkpoints_dir = self._root_dir.joinpath("checkpts")
@@ -39,6 +39,9 @@ class Logger:
 
         if not self._quiet:
             print(message)
+
+    def debug(self, message):
+        print(message)
 
     def save_model(self, model, filename):
         path = self._checkpoints_dir.joinpath(filename).with_suffix(".pth")
