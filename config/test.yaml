@@ -16,9 +16,10 @@ quantize: 256
 ##################################
 
 ############# Training ############
-learning_rate: 0.8
+learning_rate: 0.0002
+train_val_split: 0.8
 num_epochs: 10
-batch_size: 2
+batch_size: 64
 use_cuda: true
 use_speaker_conditioning: false
 record_codebook_stats: False
