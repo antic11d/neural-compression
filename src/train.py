@@ -1,10 +1,10 @@
 from argparse import ArgumentParser
-
 import torch
 from utils.log import Logger
 from utils.misc import ConfigParser
 from models.conv_vq_vae import ConvolutionalVQVAE
 from trainers.conv_trainer import ConvolutionalTrainer
+from dataset.vctk_stream import VCTKFeaturesLoader
 
 
 def main(opts):
@@ -25,9 +25,9 @@ def main(opts):
         model=model, device=device, configuration=config, optimizer_name="adam"
     )
 
-    # TODO: dataloader
-    dataloader = None
-    training_info = trainer.train(dataloader)
+    datastream = VCTKFeaturesLoader(config["vctk_path"], config, False)
+
+    training_info = trainer.train(datastream)
 
     # TODO: Evaluation
     evaluation_info = {}
