@@ -18,7 +18,7 @@ quantize: 256
 ############# Training ############
 learning_rate: 0.0002
 train_val_split: 0.8
-num_epochs: 10
+num_epochs: 5
 batch_size: 64
 use_cuda: true
 use_speaker_conditioning: false

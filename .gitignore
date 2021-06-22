@@ -130,7 +130,7 @@ dmypy.json
 
 # Custom
 .vscode/
-logs/
+21*/
 data/
 config
 !config/test.yaml
