@@ -31,9 +31,8 @@ class BaseTrainer(object):
                     )
                     logger.info(log_msg)
                     train_bar.set_description(log_msg)
-                    # if epoch % self._configuration["checkpoint_period"] == 0:
-                    #     # TODO: Implement checkpoints
-                    #     logger.debug("Should checkpoint models")
+                if epoch % self._configuration["checkpoint_period"] == 0:
+                    logger.save_model(self._model, "m_{}".format(epoch + 1))
         # TODO: return training info dict
         return {}
 
