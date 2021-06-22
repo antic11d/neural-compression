@@ -1,4 +1,5 @@
-verbose: true
+# Make a copy of this file, replace corresponding paths, and don't push you config every time
+verbose: False
 log_dir: "./logs/"
 encoder_type: conv
 decoder_type: deconv
@@ -20,8 +21,14 @@ num_epochs: 10
 batch_size: 2
 use_cuda: true
 use_speaker_conditioning: false
+record_codebook_stats: False
+record_gradient_stats: False
+normalize: False
+normalizer_path: "../data/vctk/vctk-mfcc-stats.pickle"
+vctk_path: "/Users/dimi/Coding/neural-compression/data/vctk"
 log_period: 1
 checkpoint_period: 1
+features_path: 'features'
 ##################################
 
 ############# Encoder ############

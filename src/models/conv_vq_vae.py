@@ -80,7 +80,7 @@ class ConvolutionalVQVAE(nn.Module):
         )
 
         self._device = device
-        # self._record_codebook_stats = configuration["record_codebook_stats"]
+        self._record_codebook_stats = configuration["record_codebook_stats"]
 
     @property
     def vq(self):

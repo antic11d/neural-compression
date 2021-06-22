@@ -29,7 +29,7 @@ class ConvolutionalTrainer(BaseTrainer):
                 "Optimizer name {} not supported. (use 'adam')".format(optimizer_name)
             )
 
-    def iterate(self, data, epoch):
+    def iterate(self, data, epoch, speaker_dict):
         source = data["input_features"].to(self._device)
         speaker_id = data["speaker_id"].to(self._device)
         target = (
@@ -49,7 +49,7 @@ class ConvolutionalTrainer(BaseTrainer):
             perplexity,
             encoding_indices,
             concatenated_quantized,
-        ) = self._model(source, self._data_stream.speaker_dic, speaker_id)
+        ) = self._model(source, speaker_dict, speaker_id)
 
         reconstruction_loss = self._criterion(reconstructed_x, target)
 
