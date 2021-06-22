@@ -134,3 +134,4 @@ logs/
 data/
 config
 !config/test.yaml
+.DS_Store

@@ -13,9 +13,9 @@ class VCTKFeaturesLoader(object):
     def __init__(self, vctk_path, configuration, use_cuda):
         self._normalizer = None
         # TODO: Add normalizer for better results
-        # if configuration["normalize"]:
-        #     with open(configuration["normalizer_path"], "rb") as file:
-        #         self._normalizer = pickle.load(file)
+        if configuration["normalize"]:
+            with open(configuration["normalizer_path"], "rb") as file:
+                self._normalizer = pickle.load(file)
 
         self._training_data = VCTKFeaturesDataset(
             vctk_path,

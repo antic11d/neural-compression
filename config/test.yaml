@@ -23,8 +23,8 @@ use_cuda: true
 use_speaker_conditioning: false
 record_codebook_stats: False
 record_gradient_stats: False
-normalize: False
-normalizer_path: "../data/vctk/vctk-mfcc-stats.pickle"
+normalize: true
+normalizer_path: "/Users/dimi/Coding/neural-compression/data/vctk/vctk-mfcc-stats.pickle"
 vctk_path: "/Users/dimi/Coding/neural-compression/data/vctk"
 log_period: 1
 checkpoint_period: 1
