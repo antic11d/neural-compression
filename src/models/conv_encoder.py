@@ -1,12 +1,7 @@
-import sys
-
-sys.path.insert(0, ".")
-sys.path.insert(1, "..")
-
 import torch.nn as nn
 import torch.nn.functional as F
 from .modules import ResidualStack, Conv1DBuilder
-from utils.log import Logger
+from src.utils.log import Logger
 
 
 class ConvolutionalEncoder(nn.Module):

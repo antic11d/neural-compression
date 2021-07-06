@@ -70,3 +70,6 @@ output_features_filters: 13
 augment_input_features: true
 augment_output_features: true
 ##################################
+
+eval:
+  pretrained_weights_path: /Users/dimi/Coding/neural-compression/logs/21-06-22-125159-669298/checkpts/m_5.pth

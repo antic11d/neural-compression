@@ -2,7 +2,7 @@ from datetime import datetime
 from numpy import log
 
 from tqdm.std import tqdm
-from utils.log import Logger
+from src.utils.log import Logger
 
 
 class BaseTrainer(object):

@@ -15,7 +15,7 @@ def get_dirname(base_dir):
 
 class ConfigParser:
     @staticmethod
-    def parse_json_config(path):
+    def parse_yaml_config(path):
         with open(path, "r") as f:
             config = yaml.safe_load(f)
 

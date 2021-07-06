@@ -1,16 +1,7 @@
-import sys
-
-sys.path.insert(0, ".")
-sys.path.insert(1, "..")
-
-
-# from modules.residual_stack import ResidualStack
 # from modules.jitter import Jitter
-# from modules.conv1d_builder import Conv1DBuilder
-# from modules.conv_transpose1d_builder import ConvTranspose1DBuilder
 # from speech_utils.global_conditioning import GlobalConditioning
 from .modules import ResidualStack, Conv1DBuilder, ConvTranspose1DBuilder
-from utils.log import Logger
+from src.utils.log import Logger
 import torch.nn as nn
 import torch.nn.functional as F
 
