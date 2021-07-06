@@ -25,7 +25,8 @@ class Evaluator(object):
             evaluation_entry["valid_reconstructions"],
         )
         # TODO: Add comparison plotting
-        return {"dtw_distance": dtw_distance}
+        evaluation_entry["dtw_distance"] = dtw_distance
+        return evaluation_entry
 
     def _dtw_distance(self, mfcc1, mfcc2):
         dist, _, _, _ = dtw(mfcc1.T, mfcc2.T, dist=lambda x, y: norm(x - y, ord=1))
