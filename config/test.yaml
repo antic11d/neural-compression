@@ -18,15 +18,15 @@ quantize: 256
 ############# Training ############
 learning_rate: 0.0002
 train_val_split: 0.8
-num_epochs: 5
-batch_size: 64
+num_epochs: 20
+batch_size: 1
 use_cuda: true
 use_speaker_conditioning: false
 record_codebook_stats: False
 record_gradient_stats: False
 normalize: true
-normalizer_path: "/Users/dimi/Coding/neural-compression/data/vctk/vctk-mfcc-stats.pickle"
-vctk_path: "/Users/dimi/Coding/neural-compression/data/vctk"
+normalizer_path: "/home/dantic/neural-compression/data/vctk/vctk-mfcc-stats.pickle"
+vctk_path: "/home/dantic/neural-compression/data/vctk"
 log_period: 1
 checkpoint_period: 1
 features_path: 'features'

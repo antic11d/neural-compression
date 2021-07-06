@@ -12,6 +12,7 @@ def main(opts):
     device = "cuda" if config["use_cuda"] and torch.cuda.is_available() else "cpu"
 
     logger = Logger(config["log_dir"], config["verbose"])
+    config["log_dir"] = str(logger.root_dir)
 
     logger.log_config(config)
     if config["decoder_type"] == "deconv":

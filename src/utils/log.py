@@ -23,6 +23,10 @@ class Logger:
     def __del__(self):
         self._info_file.close()
 
+    @property
+    def root_dir(self):
+        return self._root_dir
+
     def _initialize(self, root_dir, verbose=False):
         self._verbose = verbose
 
