@@ -9,7 +9,7 @@ class Logger:
     _instance = None
 
     @staticmethod
-    def get_logger(root_dir=None, verbose=True):
+    def get_logger(root_dir=".", verbose=True):
         if Logger._instance == None:
             Logger(root_dir, verbose)
         return Logger._instance
