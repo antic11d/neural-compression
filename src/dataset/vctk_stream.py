@@ -1,12 +1,9 @@
 from torch.utils.data import DataLoader
-import numpy as np
 import pathlib
 import os
 import pickle
-import matplotlib.pyplot as plt
-from tqdm import tqdm
 from .vctk_dataset import VCTKFeaturesDataset
-from utils.log import Logger
+from src.utils.log import Logger
 
 
 class VCTKFeaturesLoader(object):

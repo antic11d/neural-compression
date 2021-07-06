@@ -1,14 +1,14 @@
 from argparse import ArgumentParser
 import torch
-from utils.log import Logger
-from utils.misc import ConfigParser
-from models.conv_vq_vae import ConvolutionalVQVAE
-from trainers.conv_trainer import ConvolutionalTrainer
-from dataset.vctk_stream import VCTKFeaturesLoader
+from src.utils.log import Logger
+from src.utils.misc import ConfigParser
+from src.models.conv_vq_vae import ConvolutionalVQVAE
+from src.trainers.conv_trainer import ConvolutionalTrainer
+from src.dataset.vctk_stream import VCTKFeaturesLoader
 
 
 def main(opts):
-    config = ConfigParser.parse_json_config(opts.config_path)
+    config = ConfigParser.parse_yaml_config(opts.config_path)
     device = "cuda" if config["use_cuda"] and torch.cuda.is_available() else "cpu"
 
     logger = Logger(config["log_dir"], config["verbose"])

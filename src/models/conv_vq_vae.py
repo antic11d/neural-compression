@@ -1,13 +1,7 @@
-import sys
-
-sys.path.insert(0, ".")
-sys.path.insert(1, "..")
-
-from utils.log import Logger
 from .conv_encoder import ConvolutionalEncoder
 from .deconv_decoder import DeconvolutionalDecoder
 from .vq import VectorQuantizer
-
+from src.utils.log import Logger
 
 import torch.nn as nn
 import torch.nn.functional as F
