@@ -1,9 +1,17 @@
 # from modules.jitter import Jitter
 # from speech_utils.global_conditioning import GlobalConditioning
-from .modules import ResidualStack, Conv1DBuilder, ConvTranspose1DBuilder
+from .modules import (
+    ResidualStack,
+    Conv1DBuilder,
+    ConvTranspose1DBuilder,
+    GlobalConditioning,
+    Jitter,
+)
 from src.utils.log import Logger
 import torch.nn as nn
 import torch.nn.functional as F
+import torch
+import numpy as np
 
 
 class DeconvolutionalDecoder(nn.Module):
@@ -31,8 +39,8 @@ class DeconvolutionalDecoder(nn.Module):
         if self._verbose:
             self._logger = Logger.get_logger()
 
-        # if self._use_jitter:
-        #     self._jitter = Jitter(jitter_probability)
+        if self._use_jitter:
+            self._jitter = Jitter(jitter_probability)
 
         # FIXME hardcoded
         in_channels = (
@@ -89,19 +97,16 @@ class DeconvolutionalDecoder(nn.Module):
         if self._use_jitter and self.training:
             x = self._jitter(x)
 
-        # TODO: Check again
-        # I don't think we should use this if we are trying to overfit on one podcast show
-
-        # if self._use_speaker_conditioning:
-        #     speaker_embedding = GlobalConditioning.compute(
-        #         speaker_dic,
-        #         speaker_id,
-        #         x,
-        #         device=self._device,
-        #         gin_channels=40,
-        #         expand=True,
-        #     )
-        #     x = torch.cat([x, speaker_embedding], dim=1).to(self._device)
+        if self._use_speaker_conditioning:
+            speaker_embedding = GlobalConditioning.compute(
+                speaker_dic,
+                speaker_id,
+                x,
+                device=self._device,
+                gin_channels=40,
+                expand=True,
+            )
+            x = torch.cat([x, speaker_embedding], dim=1).to(self._device)
 
         x = self._conv_1(x)
         if self._verbose:

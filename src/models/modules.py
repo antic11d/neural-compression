@@ -156,3 +156,69 @@ class Jitter(nn.Module):
                 quantized[:, :, i] = original_quantized[:, :, neighbor_index]
 
         return quantized
+
+
+class GlobalConditioning(object):
+    @staticmethod
+    def compute(
+        speaker_dic, speaker_ids, x_one_hot, device, gin_channels=128, expand=True
+    ):
+        speakers_embedding = GlobalConditioning._Embedding(
+            len(speaker_dic), gin_channels, padding_idx=None, std=0.1
+        ).to(device)
+
+        # Extract the batch size and the signal length
+        B, _, T = x_one_hot.size()
+
+        # (B x 1) -> (B x 1 x gin_channels)
+        global_conditioning = speakers_embedding(speaker_ids.view(B, -1).long())
+
+        # (B x gin_channels x 1)
+        global_conditioning = global_conditioning.transpose(1, 2)
+
+        # Check if the result have the right dimension
+        assert global_conditioning.dim() == 3
+
+        """
+        Return the global conditioning if the expand
+        option is set to False
+        """
+        if not expand:
+            return global_conditioning
+
+        # Expand global conditioning features to all time steps
+        expanded_global_conditioning = GlobalConditioning._expand_global_features(
+            B, T, global_conditioning, bct=True
+        )
+
+        return expanded_global_conditioning
+
+    @staticmethod
+    def _Embedding(num_embeddings, embedding_dim, padding_idx, std=0.01):
+        m = nn.Embedding(num_embeddings, embedding_dim, padding_idx=padding_idx)
+        m.weight.data.normal_(0, std)
+        return m
+
+    @staticmethod
+    def _expand_global_features(B, T, g, bct=True):
+        """
+        Expand global conditioning features to all time steps
+
+        Args:
+            B (int): Batch size.
+            T (int): Time length.
+            g (Tensor): Global features, (B x C) or (B x C x 1).
+            bct (bool) : returns (B x C x T) if True, otherwise (B x T x C)
+
+        Returns:
+            Tensor: B x C x T or B x T x C or None
+        """
+        if g is None:
+            return None
+        g = g.unsqueeze(-1) if g.dim() == 2 else g
+        if bct:
+            g_bct = g.expand(B, -1, T)
+            return g_bct.contiguous()
+        else:
+            g_btc = g.expand(B, -1, T).transpose(1, 2)
+            return g_btc.contiguous()

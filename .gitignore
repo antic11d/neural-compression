@@ -132,8 +132,6 @@ dmypy.json
 .vscode/
 21*/
 data/
-config
-!config/test.yaml
 .DS_Store
 notebooks/
 logs/
