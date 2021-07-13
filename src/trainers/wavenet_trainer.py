@@ -32,9 +32,7 @@ class WavenetTrainer(BaseTrainer):
     def iterate(self, data, epoch, speaker_dic):
         source = data["input_features"].permute(0, 2, 1).float().to(self._device)
         speaker_id = data["speaker_id"].to(self._device)
-        target = (
-            data["preprocessed_audio"].to(self._device).contiguous().float().squeeze()
-        )
+        target = data["one_hot"].to(self._device).contiguous().float()
 
         self._optimizer.zero_grad()
 
@@ -48,7 +46,9 @@ class WavenetTrainer(BaseTrainer):
             concatenated_quantized,
         ) = self._model(source, data["one_hot"], speaker_id)
 
-        reconstruction_loss = self._criterion(reconstructed_x, target)
+        reconstruction_loss = self._criterion(
+            reconstructed_x.squeeze(), target.squeeze()
+        )
 
         loss = vq_loss + reconstruction_loss
         losses["reconstruction_loss"] = reconstruction_loss.item()
