@@ -3,6 +3,7 @@ import torch
 import numpy as np
 import json
 from .misc import get_dirname
+import matplotlib.pyplot as plt
 
 
 class Logger:
@@ -36,6 +37,9 @@ class Logger:
         self._checkpoints_dir = self._root_dir.joinpath("checkpts")
         self._checkpoints_dir.mkdir(exist_ok=True)
 
+        self._plots_dir = self._root_dir.joinpath("plots")
+        self._plots_dir.mkdir(exist_ok=True)
+
         self._info_file = open(self._root_dir.joinpath("info.txt"), "a")
         return self
 
@@ -51,6 +55,11 @@ class Logger:
     def save_model(self, model, filename):
         path = self._checkpoints_dir.joinpath(filename).with_suffix(".pth")
         torch.save(model.state_dict(), path)
+
+    def save_plot(self, filename):
+        path = self._plots_dir.joinpath(filename)
+        plt.savefig(path, bbox_inches="tight", pad_inches=0)
+        plt.close()
 
     def to_csv(self, data, filename):
         savepath = self._root_dir.joinpath(filename).with_suffix(".csv")
