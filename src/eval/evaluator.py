@@ -5,7 +5,12 @@ import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt
 from src.utils.log import Logger
-from ..utils.misc import load_txts, parse_audio, plot_pcolormesh, compute_unified_time_scale
+from ..utils.misc import (
+    load_txts,
+    parse_audio,
+    plot_pcolormesh,
+    compute_unified_time_scale,
+)
 
 
 class Evaluator(object):
@@ -35,7 +40,9 @@ class Evaluator(object):
         return evaluation_entry
 
     def _dtw_distance(self, mfcc1, mfcc2):
-        dist, _, _, _ = dtw(mfcc1.T, mfcc2.T, dist=lambda x, y: norm((x - y).cpu(), ord=1))
+        dist, _, _, _ = dtw(
+            mfcc1.T, mfcc2.T, dist=lambda x, y: norm((x - y).cpu(), ord=1)
+        )
         return dist
 
     def _evaluate_once(self):
@@ -100,54 +107,92 @@ class Evaluator(object):
 
         logger = Logger.get_logger()
 
-        tmp = evaluation_entry['wav_filename'].split('/')[-1].split('\\')[-1].split('_')
-        utterence_key = tmp[0] + '_' + tmp[1]
-        utterences = load_txts('../vctk/raw/VCTK-Corpus')
+        tmp = evaluation_entry["wav_filename"].split("/")[-1].split("\\")[-1].split("_")
+        utterence_key = tmp[0] + "_" + tmp[1]
+        utterences = load_txts("../vctk/raw/VCTK-Corpus")
         print(utterences[utterence_key])
 
-        preprocessed_audio = evaluation_entry['preprocessed_audio'].detach().cpu()[0].numpy().squeeze()
+        preprocessed_audio = (
+            evaluation_entry["preprocessed_audio"].detach().cpu()[0].numpy().squeeze()
+        )
         spectrogram = parse_audio(preprocessed_audio).contiguous()
 
         spectrogram = spectrogram.detach().cpu().numpy()
 
-        valid_originals = evaluation_entry['valid_originals'].detach().cpu()[0].numpy()
+        valid_originals = evaluation_entry["valid_originals"].detach().cpu()[0].numpy()
 
-        probs = F.softmax(-evaluation_entry['distances'][0], dim=1).detach().cpu().transpose(0, 1).contiguous()
+        probs = (
+            F.softmax(-evaluation_entry["distances"][0], dim=1)
+            .detach()
+            .cpu()
+            .transpose(0, 1)
+            .contiguous()
+        )
 
-        valid_reconstructions = evaluation_entry['valid_reconstructions'].detach().cpu().numpy()
+        valid_reconstructions = (
+            evaluation_entry["valid_reconstructions"].detach().cpu().numpy()
+        )
 
         fig, axs = plt.subplots(6, 1, figsize=(35, 30), sharex=True)
 
         # Waveform of the original speech signal
-        axs[0].set_title('Waveform of the original speech signal')
-        axs[0].plot(np.arange(len(preprocessed_audio)) / float(self._configuration['sampling_rate']),
-                    preprocessed_audio)
+        axs[0].set_title("Waveform of the original speech signal")
+        axs[0].plot(
+            np.arange(len(preprocessed_audio))
+            / float(self._configuration["sampling_rate"]),
+            preprocessed_audio,
+        )
 
         # Spectrogram of the original speech signal
-        axs[1].set_title('Spectrogram of the original speech signal')
-        plot_pcolormesh(spectrogram, fig, x=compute_unified_time_scale(spectrogram.shape[1]), axis=axs[1])
+        axs[1].set_title("Spectrogram of the original speech signal")
+        plot_pcolormesh(
+            spectrogram,
+            fig,
+            x=compute_unified_time_scale(spectrogram.shape[1]),
+            axis=axs[1],
+        )
 
         # MFCC + d + a of the original speech signal
-        axs[2].set_title('Augmented MFCC + d + a #filters=13+13+13 of the original speech signal')
-        plot_pcolormesh(valid_originals, fig, x=compute_unified_time_scale(valid_originals.shape[1]),
-                              axis=axs[2])
+        axs[2].set_title(
+            "Augmented MFCC + d + a #filters=13+13+13 of the original speech signal"
+        )
+        plot_pcolormesh(
+            valid_originals,
+            fig,
+            x=compute_unified_time_scale(valid_originals.shape[1]),
+            axis=axs[2],
+        )
 
         # Softmax of distances computed in VQ
         axs[3].set_title(
-            'Softmax of distances computed in VQ\n($||z_e(x) - e_i||^2_2$ with $z_e(x)$ the output of the encoder prior to quantization)')
-        plot_pcolormesh(probs, fig, x=compute_unified_time_scale(probs.shape[1], downsampling_factor=2),
-                              axis=axs[3])
+            "Softmax of distances computed in VQ\n($||z_e(x) - e_i||^2_2$ with $z_e(x)$ the output of the encoder prior to quantization)"
+        )
+        plot_pcolormesh(
+            probs,
+            fig,
+            x=compute_unified_time_scale(probs.shape[1], downsampling_factor=2),
+            axis=axs[3],
+        )
 
-        encodings = evaluation_entry['encodings'].detach().cpu().numpy()
-        axs[4].set_title('Encodings')
-        plot_pcolormesh(encodings[0].transpose(), fig,
-                              x=compute_unified_time_scale(encodings[0].transpose().shape[1],
-                                                                 downsampling_factor=2), axis=axs[4])
+        encodings = evaluation_entry["encodings"].detach().cpu().numpy()
+        axs[4].set_title("Encodings")
+        plot_pcolormesh(
+            encodings[0].transpose(),
+            fig,
+            x=compute_unified_time_scale(
+                encodings[0].transpose().shape[1], downsampling_factor=2
+            ),
+            axis=axs[4],
+        )
 
         # Actual reconstruction
-        axs[5].set_title('Actual reconstruction')
-        plot_pcolormesh(valid_reconstructions, fig,
-                              x=compute_unified_time_scale(valid_reconstructions.shape[1]), axis=axs[5])
+        axs[5].set_title("Actual reconstruction")
+        plot_pcolormesh(
+            valid_reconstructions,
+            fig,
+            x=compute_unified_time_scale(valid_reconstructions.shape[1]),
+            axis=axs[5],
+        )
 
-        plot_name = 'evaluation-comparaison-plot.png'
+        plot_name = "evaluation-comparaison-plot.png"
         logger.save_plot(plot_name)

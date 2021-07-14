@@ -8,6 +8,7 @@ import librosa
 import torch
 import matplotlib.pyplot as plt
 
+
 def get_dirname(base_dir):
     dirname = time.strftime(
         f"%y-%m-%d-%H%M%S-{random.randint(0, 1e6):06}", time.gmtime(time.time())
@@ -36,15 +37,23 @@ def load_txts(dir):
             for fname in fnames:
                 if fname.endswith(".txt"):
                     with open(os.path.join(root, fname), "r") as f:
-                        fname_no_ext = os.path.basename(
-                            fname).rsplit(".", 1)[0]
+                        fname_no_ext = os.path.basename(fname).rsplit(".", 1)[0]
                         utterences[fname_no_ext] = f.readline()
     return utterences
 
 
-def parse_audio(y , noiseInjector = False, noise_prob=0.4, sample_rate=16000, window_size=0.02, window_stride=0.01, window='hamming', normalize=True):
+def parse_audio(
+    y,
+    noiseInjector=False,
+    noise_prob=0.4,
+    sample_rate=16000,
+    window_size=0.02,
+    window_stride=0.01,
+    window="hamming",
+    normalize=True,
+):
 
-    #class noiseInjector isnt implemented. Left this just in case
+    # class noiseInjector isnt implemented. Left this just in case
     ############################################################
     if noiseInjector:
         add_noise = np.random.binomial(1, noise_prob)
@@ -56,8 +65,9 @@ def parse_audio(y , noiseInjector = False, noise_prob=0.4, sample_rate=16000, wi
     win_length = n_fft
     hop_length = int(sample_rate * window_stride)
     # STFT
-    D = librosa.stft(y, n_fft=n_fft, hop_length=hop_length,
-                         win_length=win_length, window=window)
+    D = librosa.stft(
+        y, n_fft=n_fft, hop_length=hop_length, win_length=win_length, window=window
+    )
     spect, _ = librosa.magphase(D)
     # S = log(S+1)
     spect = np.log1p(spect)
@@ -81,6 +91,7 @@ def plot_pcolormesh(data, fig, x=None, y=None, axis=None):
 
 def compute_unified_time_scale(shape, winstep=0.01, downsampling_factor=1):
     return np.arange(shape) * winstep * downsampling_factor
+
 
 class ConfigParser:
     @staticmethod
