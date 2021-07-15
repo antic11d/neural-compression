@@ -175,13 +175,13 @@ class WaveNet(nn.Module):
             self.conv_layers.append(conv)
         self.last_conv_layers = nn.ModuleList(
             [
-                nn.ReLU(inplace=True),
+                nn.ReLU(),
                 Conv1d1x1(
                     skip_out_channels,
                     skip_out_channels,
                     weight_normalization=weight_normalization,
                 ),
-                nn.ReLU(inplace=True),
+                nn.ReLU(),
                 Conv1d1x1(
                     skip_out_channels,
                     out_channels,
@@ -215,7 +215,7 @@ class WaveNet(nn.Module):
                 self.upsample_conv.append(convt)
                 # assuming we use [0, 1] scaled features
                 # this should avoid non-negative upsampling output
-                self.upsample_conv.append(nn.ReLU(inplace=True))
+                self.upsample_conv.append(nn.ReLU())
         else:
             self.upsample_conv = None
 
