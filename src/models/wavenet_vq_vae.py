@@ -62,7 +62,6 @@ class WaveNetVQVAE(nn.Module):
 
     def forward(self, x_enc, x_dec, global_condition):
         z = self._encoder(x_enc)
-
         z = self._pre_vq_conv(z)
 
         (

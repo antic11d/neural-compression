@@ -60,7 +60,7 @@ class VectorQuantizer(nn.Module):
                 of the quantized space each input element was mapped to.
             distances
         """
-
+        # print(inputs)
         # Convert inputs from BCHW -> BHWC
         inputs = inputs.permute(1, 2, 0).contiguous()
         input_shape = inputs.shape

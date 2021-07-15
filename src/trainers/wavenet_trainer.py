@@ -46,9 +46,7 @@ class WavenetTrainer(BaseTrainer):
             concatenated_quantized,
         ) = self._model(source, data["one_hot"], speaker_id)
 
-        reconstruction_loss = self._criterion(
-            reconstructed_x.squeeze(), target.squeeze()
-        )
+        reconstruction_loss = self._criterion(reconstructed_x, target.squeeze(1))
 
         loss = vq_loss + reconstruction_loss
         losses["reconstruction_loss"] = reconstruction_loss.item()

@@ -246,7 +246,7 @@ class WaveNet(nn.Module):
         Returns:
             Tensor: output, shape B x out_channels x T
         """
-        x = x.squeeze(0)
+        x = x.squeeze(1)
         B, _, T = x.size()
 
         if g is not None:

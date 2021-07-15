@@ -1,5 +1,5 @@
 # Make a copy of this file, replace corresponding paths, and don't push you config every time
-verbose: false
+verbose: True
 log_dir: "./logs/"
 encoder_type: conv
 decoder_type: wavenet
@@ -18,13 +18,13 @@ quantize: 256
 ############# Training ############
 learning_rate: 0.0002
 train_val_split: 0.8
-num_epochs: 10
+num_epochs: 8
 batch_size: 1
-use_cuda: true
-use_speaker_conditioning: true
+use_cuda: True
+use_speaker_conditioning: True
 record_codebook_stats: False
 record_gradient_stats: False
-normalize: true
+normalize: True
 normalizer_path: "/Users/dimi/Coding/neural-compression/data/vctk/vctk-mfcc-stats.pickle"
 vctk_path: "/Users/dimi/Coding/neural-compression/data/vctk"
 log_period: 1
@@ -53,7 +53,7 @@ num_residual_layers: 2
 # WaveNet Decoder
 n_loop: 2
 # n_layers should be much bigger value eg. 20
-n_layers: 4 # n_layers % n_loop == 0
+n_layers: 2 # n_layers % n_loop == 0
 filter_size: 3
 gate_channels: 768
 skip_out_channels: 256

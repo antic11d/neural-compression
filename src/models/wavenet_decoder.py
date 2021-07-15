@@ -22,11 +22,10 @@ class WaveNetDecoder(nn.Module):
         self._conv_1 = Conv1DBuilder.build(
             in_channels=64,
             out_channels=768,
-            kernel_size=2,
+            kernel_size=3,
             use_kaiming_normal=configuration["use_kaiming_normal"],
         )
 
-        # self._wavenet = WaveNetFactory.build(wavenet_type)
         self._wavenet = WaveNet(
             configuration["quantize"],
             configuration["n_layers"],
@@ -39,8 +38,8 @@ class WaveNetDecoder(nn.Module):
             gin_channels=configuration["global_condition_dim"],
             n_speakers=len(speaker_dic),
             upsample_conditional_features=True,
-            upsample_scales=[2, 2, 2, 2, 2, 12]  # 768
-            # upsample_scales=[2, 2, 2, 2, 12]
+            use_speaker_embedding=True,
+            upsample_scales=[2, 2, 2, 2, 2, 10],  # need to scale 24 to 7680
         )
 
         self._device = device
@@ -51,7 +50,6 @@ class WaveNetDecoder(nn.Module):
 
         local_condition = self._conv_1(local_condition)
 
-        # x = self._wavenet(y, local_condition, global_condition)
-        x = self._wavenet(y)
+        x = self._wavenet(y, local_condition, global_condition)
 
         return x

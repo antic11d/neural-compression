@@ -94,35 +94,43 @@ class ConvolutionalEncoder(nn.Module):
         self._sampling_rate = sampling_rate
         self._device = device
         self._verbose = verbose
-        if self._verbose:
-            self._logger = Logger.get_logger()
+        # if self._verbose:
+        self._logger = Logger.get_logger()
 
     def forward(self, inputs):
+        # self._verbose = True
+        print(inputs)
         if self._verbose:
             self._logger.debug("inputs size: {}".format(inputs.size()))
 
         x_conv_1 = F.relu(self._conv_1(inputs))
         if self._verbose:
             self._logger.debug("x_conv_1 output size: {}".format(x_conv_1.size()))
+        print(x_conv_1)
 
         x = F.relu(self._conv_2(x_conv_1)) + x_conv_1
         if self._verbose:
             self._logger.debug("_conv_2 output size: {}".format(x.size()))
+        print(x)
 
         x_conv_3 = F.relu(self._conv_3(x))
         if self._verbose:
             self._logger.debug("_conv_3 output size: {}".format(x_conv_3.size()))
+        print(x_conv_3)
 
         x_conv_4 = F.relu(self._conv_4(x_conv_3)) + x_conv_3
         if self._verbose:
             self._logger.debug("_conv_4 output size: {}".format(x_conv_4.size()))
+        print(x_conv_4)
 
         x_conv_5 = F.relu(self._conv_5(x_conv_4)) + x_conv_4
         if self._verbose:
             self._logger.debug("x_conv_5 output size: {}".format(x_conv_5.size()))
+        print(x_conv_5)
 
         x = self._residual_stack(x_conv_5) + x_conv_5
         if self._verbose:
             self._logger.debug("_residual_stack output size: {}".format(x.size()))
-
+        print(x)
+        print("--------------------")
         return x

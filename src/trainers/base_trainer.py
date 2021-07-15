@@ -1,8 +1,10 @@
 from datetime import datetime
-from numpy import log
+import numpy as np
 
 from tqdm.std import tqdm
 from src.utils.log import Logger
+
+import torch
 
 
 class BaseTrainer(object):
