@@ -40,6 +40,9 @@ class Logger:
         self._plots_dir = self._root_dir.joinpath("plots")
         self._plots_dir.mkdir(exist_ok=True)
 
+        self._stats_dir = self._root_dir.joinpath("stats")
+        self._stats_dir.mkdir(exist_ok=True)
+
         self._info_file = open(self._root_dir.joinpath("info.txt"), "a")
         return self
 
@@ -56,10 +59,13 @@ class Logger:
         path = self._checkpoints_dir.joinpath(filename).with_suffix(".pth")
         torch.save(model.state_dict(), path)
 
-    def save_plot(self, filename):
+    def save_plot(self, fig, filename):
         path = self._plots_dir.joinpath(filename)
-        plt.savefig(path, bbox_inches="tight", pad_inches=0)
+        fig.savefig(path, bbox_inches="tight", pad_inches=0)
         plt.close()
+
+    def to_npy(self, data, filename):
+        np.save(self._stats_dir.joinpath(filename), data)
 
     def to_csv(self, data, filename):
         savepath = self._root_dir.joinpath(filename).with_suffix(".csv")
@@ -71,4 +77,20 @@ class Logger:
 
     def log_training(self, info):
         for k, v in info.items():
-            self.to_csv(np.array(v), k)
+            self.to_npy(np.array(v), k)
+        self._plot_training(info)
+
+    def _plot_training(self, info):
+        fig, axs = plt.subplots(3, 2, figsize=(18, 6))
+        flat_axs = axs.flatten()
+        for i, (k, v) in enumerate(info.items()):
+            self._plot(v, k, flat_axs[i])
+
+        self.save_plot(fig, "stats.png")
+
+    def _plot(self, data, title, ax=None):
+        if ax is None:
+            ax = plt.gca()
+        ax.plot(np.arange(len(data)), data)
+        ax.set_ylabel(title)
+        ax.grid(True)

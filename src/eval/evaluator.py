@@ -192,4 +192,4 @@ class Evaluator(object):
         )
 
         plot_name = "evaluation-comparison-plot.png"
-        logger.save_plot(plot_name)
+        logger.save_plot(fig, plot_name)
