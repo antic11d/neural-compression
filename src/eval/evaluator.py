@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt
 from src.utils.log import Logger
+from pathlib import Path
 from ..utils.misc import (
     load_txts,
     parse_audio,
@@ -34,7 +35,6 @@ class Evaluator(object):
             evaluation_entry["valid_originals"],
             evaluation_entry["valid_reconstructions"],
         )
-        # TODO: Add comparison plotting
         evaluation_entry["dtw_distance"] = dtw_distance
         self._compute_comparison_plot(evaluation_entry)
         return evaluation_entry
@@ -58,30 +58,26 @@ class Evaluator(object):
         shifting_time = data["shifting_time"].to(self._device)
         preprocessed_length = data["preprocessed_length"].to(self._device)
 
-        valid_originals = valid_originals.permute(0, 2, 1).contiguous().float()
+        valid_originals = valid_originals.contiguous().float()
         batch_size = valid_originals.size(0)
         target = target.permute(0, 2, 1).contiguous().float()
         wav_filename = wav_filename[0][0]
 
         with torch.no_grad():
-            z = self._model.encoder(valid_originals)
-            z = self._model.pre_vq_conv(z)
             (
+                reconstructed_x,
+                _,
+                _,
                 _,
                 quantized,
-                _,
                 encodings,
                 distances,
                 encoding_indices,
-                _,
                 encoding_distances,
                 embedding_distances,
                 frames_vs_embedding_distances,
                 concatenated_quantized,
-            ) = self._model.vq(z)
-            valid_reconstructions = self._model.decoder(
-                quantized, self._data_stream.speaker_dic, speaker_ids
-            )[0]
+            ) = self._model(valid_originals, self._data_stream.speaker_dic, speaker_ids)
 
         return {
             "preprocessed_audio": preprocessed_audio,
@@ -100,7 +96,7 @@ class Evaluator(object):
             "embedding_distances": embedding_distances,
             "frames_vs_embedding_distances": frames_vs_embedding_distances,
             "concatenated_quantized": concatenated_quantized,
-            "valid_reconstructions": valid_reconstructions,
+            "valid_reconstructions": reconstructed_x.permute(0, 2, 1),
         }
 
     def _compute_comparison_plot(self, evaluation_entry):
@@ -109,7 +105,8 @@ class Evaluator(object):
 
         tmp = evaluation_entry["wav_filename"].split("/")[-1].split("\\")[-1].split("_")
         utterence_key = tmp[0] + "_" + tmp[1]
-        utterences = load_txts("../vctk/raw/VCTK-Corpus")
+        path = Path(self._configuration["vctk_path"]).joinpath("raw", "VCTK-Corpus")
+        utterences = load_txts(path)
         print(utterences[utterence_key])
 
         preprocessed_audio = (
@@ -157,9 +154,9 @@ class Evaluator(object):
             "Augmented MFCC + d + a #filters=13+13+13 of the original speech signal"
         )
         plot_pcolormesh(
-            valid_originals,
+            valid_originals.T,
             fig,
-            x=compute_unified_time_scale(valid_originals.shape[1]),
+            x=compute_unified_time_scale(valid_originals.shape[0]),
             axis=axs[2],
         )
 
@@ -188,11 +185,11 @@ class Evaluator(object):
         # Actual reconstruction
         axs[5].set_title("Actual reconstruction")
         plot_pcolormesh(
-            valid_reconstructions,
+            valid_reconstructions.squeeze(0).T,
             fig,
             x=compute_unified_time_scale(valid_reconstructions.shape[1]),
             axis=axs[5],
         )
 
-        plot_name = "evaluation-comparaison-plot.png"
+        plot_name = "evaluation-comparison-plot.png"
         logger.save_plot(plot_name)

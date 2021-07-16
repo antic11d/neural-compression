@@ -2,6 +2,7 @@ from torch import nn
 import torch.optim as optim
 
 from .base_trainer import BaseTrainer
+import torch
 
 
 class ConvolutionalTrainer(BaseTrainer):
@@ -12,7 +13,7 @@ class ConvolutionalTrainer(BaseTrainer):
         configuration,
         optimizer_name="adam",
         criterion=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(device, configuration)
 
@@ -42,14 +43,9 @@ class ConvolutionalTrainer(BaseTrainer):
 
         self._optimizer.zero_grad()
 
-        (
-            reconstructed_x,
-            vq_loss,
-            losses,
-            perplexity,
-            encoding_indices,
-            concatenated_quantized,
-        ) = self._model(source, speaker_dict, speaker_id)
+        (reconstructed_x, vq_loss, losses, perplexity, *unused) = self._model(
+            source, speaker_dict, speaker_id
+        )
 
         reconstruction_loss = self._criterion(reconstructed_x, target)
 

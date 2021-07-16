@@ -19,9 +19,9 @@ quantize: 256
 learning_rate: 0.0002
 train_val_split: 0.8
 num_epochs: 5
-batch_size: 64
+batch_size: 1
 use_cuda: true
-use_speaker_conditioning: true
+use_speaker_conditioning: False
 record_codebook_stats: False
 record_gradient_stats: False
 normalize: true
@@ -29,7 +29,7 @@ normalizer_path: "/Users/dimi/Coding/neural-compression/data/vctk/vctk-mfcc-stat
 vctk_path: "/Users/dimi/Coding//neural-compression/data/vctk"
 log_period: 1
 checkpoint_period: 1
-features_path: 'features'
+features_path: 'feature'
 ##################################
 
 ############# Encoder ############
@@ -68,8 +68,8 @@ input_features_filters: 13
 output_features_dim: 47
 output_features_filters: 13
 augment_input_features: true
-augment_output_features: false
+augment_output_features: true
 ##################################
 
 eval:
-  pretrained_weights_path: /Users/dimi/Coding/neural-compression/logs/21-06-22-125159-669298/checkpts/m_5.pth
+  pretrained_weights_path: /Users/dimi/Coding/neural-compression/logs/21-07-16-121554-924720/checkpts/m_1.pth
