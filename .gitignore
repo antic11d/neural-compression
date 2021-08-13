@@ -137,3 +137,5 @@ config
 .DS_Store
 notebooks/
 logs/
+
+data/vctk

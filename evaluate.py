@@ -16,7 +16,7 @@ def main(opts):
     device = "cuda" if cuda_available else "cpu"
 
     model = ConvolutionalVQVAE(config, device).to(device)
-    model.load_state_dict(torch.load(config["eval"]["pretrained_weights_path"]))
+    model.load_state_dict(torch.load(config["eval"]["pretrained_weights_path"], map_location=torch.device('cpu')))
     datastream = VCTKFeaturesLoader(config["vctk_path"], config, cuda_available)
     evaluator = Evaluator(device, model, datastream, config)
     eval_dict = evaluator.evaluate()
