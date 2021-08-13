@@ -2,10 +2,9 @@ from torch import nn
 import torch.optim as optim
 
 from .base_trainer import BaseTrainer
-import torch
 
 
-class ConvolutionalTrainer(BaseTrainer):
+class WavenetTrainer(BaseTrainer):
     def __init__(
         self,
         model,
@@ -13,7 +12,7 @@ class ConvolutionalTrainer(BaseTrainer):
         configuration,
         optimizer_name="adam",
         criterion=None,
-        **kwargs,
+        **kwargs
     ):
         super().__init__(device, configuration)
 
@@ -30,24 +29,26 @@ class ConvolutionalTrainer(BaseTrainer):
                 "Optimizer name {} not supported. (use 'adam')".format(optimizer_name)
             )
 
-    def iterate(self, data, epoch, speaker_dict):
-        source = data["input_features"].to(self._device)
+    def iterate(self, data, epoch, speaker_dic):
+        source = data["input_features"].permute(0, 2, 1).float().to(self._device)
         speaker_id = data["speaker_id"].to(self._device)
-        target = (
-            data["output_features"]
-            .to(self._device)
-            .permute(0, 2, 1)
-            .contiguous()
-            .float()
-        )
+        target = data["one_hot"].to(self._device).contiguous().float()
 
         self._optimizer.zero_grad()
 
-        (reconstructed_x, vq_loss, losses, perplexity, *unused) = self._model(
-            source, speaker_dict, speaker_id
-        )
+        (
+            reconstructed_x,
+            x_dec,
+            vq_loss,
+            losses,
+            perplexity,
+            encoding_indices,
+            concatenated_quantized,
+        ) = self._model(source, data["one_hot"], speaker_id)
 
-        reconstruction_loss = self._criterion(reconstructed_x, target)
+        reconstruction_loss = self._criterion(
+            reconstructed_x.squeeze(), target.squeeze()
+        )
 
         loss = vq_loss + reconstruction_loss
         losses["reconstruction_loss"] = reconstruction_loss.item()

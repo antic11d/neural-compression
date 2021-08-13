@@ -43,15 +43,6 @@ class ConvolutionalVQVAE(nn.Module):
             padding=1,
         )
 
-        # if configuration["decay"] > 0.0:
-        # self._vq = VectorQuantizerEMA(
-        #     num_embeddings=configuration["num_embeddings"],
-        #     embedding_dim=configuration["embedding_dim"],
-        #     commitment_cost=configuration["commitment_cost"],
-        #     decay=configuration["decay"],
-        #     device=device,
-        # )
-        # else:
         self._vq = VectorQuantizer(
             num_embeddings=configuration["num_embeddings"],
             embedding_dim=configuration["embedding_dim"],
@@ -109,13 +100,13 @@ class ConvolutionalVQVAE(nn.Module):
             vq_loss,
             quantized,
             perplexity,
-            _,
-            _,
+            encodings,
+            distances,
             encoding_indices,
             losses,
-            _,
-            _,
-            _,
+            encoding_distances,
+            embedding_distances,
+            frames_vs_embedding_distances,
             concatenated_quantized,
         ) = self._vq(z, record_codebook_stats=self._record_codebook_stats)
 
@@ -135,6 +126,12 @@ class ConvolutionalVQVAE(nn.Module):
             vq_loss,
             losses,
             perplexity,
+            quantized,
+            encodings,
+            distances,
             encoding_indices,
+            encoding_distances,
+            embedding_distances,
+            frames_vs_embedding_distances,
             concatenated_quantized,
         )
