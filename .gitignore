@@ -137,3 +137,7 @@ notebooks/
 logs/
 
 data/vctk
+
+train.png
+valid.png
+pretrained
