@@ -1,6 +1,9 @@
 from dtw import dtw
 from numpy.linalg import norm
 import torch
+import numpy as np
+import matplotlib.pyplot as plt
+import random
 import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,6 +15,9 @@ from ..utils.misc import (
     plot_pcolormesh,
     compute_unified_time_scale,
 )
+
+TYPE_VALID = "Validation set"
+TYPE_TRAIN = "Training set"
 
 
 class Evaluator(object):
@@ -35,9 +41,46 @@ class Evaluator(object):
             evaluation_entry["valid_originals"],
             evaluation_entry["valid_reconstructions"],
         )
+        encoding_indices_dim = evaluation_entry["encoding_indices"].shape[0]
+        embedding_dim = evaluation_entry["encodings"].shape[-1]
+        categories = list(range(embedding_dim))
+
+        train_empirical_probabilities = self.calculate_empirical_probs(
+            categories=categories,
+            type=TYPE_TRAIN,
+            encoding_indices_dim=encoding_indices_dim,
+            NUM_EVALS=1_000,
+        )
+
+        valid_empirical_probabilities = self.calculate_empirical_probs(
+            categories=categories,
+            type=TYPE_VALID,
+            encoding_indices_dim=encoding_indices_dim,
+            NUM_EVALS=1_000,
+        )[0]
+
+        baseline = encoding_indices_dim * np.log2(embedding_dim)
+        entropy = self.calculate_entropy(train_empirical_probabilities)
+        ic = self.calculate_ic(valid_empirical_probabilities)
+
+        # Print statistics
+        print("Baseline: ", baseline)
+        print("Entropy: ", entropy)
+        print("IC: ", ic)
+
+        self.plot_train_probabilities(train_empirical_probabilities, categories)
+        self.plot_valid_probabilities(valid_empirical_probabilities, categories)
+
         evaluation_entry["dtw_distance"] = dtw_distance
         self._compute_comparison_plot(evaluation_entry)
         return evaluation_entry
+
+    def calculate_entropy(self, train_empirical_probabilities):
+        neg_logs = -np.log2(train_empirical_probabilities + 1e-6)
+        return np.multiply(train_empirical_probabilities, neg_logs).sum(axis=-1).sum()
+
+    def calculate_ic(self, valid_empirical_probabilities):
+        return (-np.log2(valid_empirical_probabilities + 1e-6)).sum()
 
     def _dtw_distance(self, mfcc1, mfcc2):
         dist, _, _, _ = dtw(
@@ -45,10 +88,93 @@ class Evaluator(object):
         )
         return dist
 
-    def _evaluate_once(self):
+    def calculate_empirical_probs(
+        self, categories, type, encoding_indices_dim=24, NUM_EVALS=1000
+    ):
+        self._model.eval()
+        buffer = torch.zeros((encoding_indices_dim, NUM_EVALS))
+
+        if type == TYPE_TRAIN:
+            iterator = iter(self._data_stream.training_loader)
+        elif type == TYPE_VALID:
+            iterator = iter(self._data_stream.validation_loader)
+        else:
+            raise Exception("Unsupported type")
+
+        for i in range(NUM_EVALS):
+            evaluation_entry = self._evaluate_once(iterator=iterator)
+            buffer[:, i] = evaluation_entry["encoding_indices"].view(
+                1, encoding_indices_dim
+            )
+
+        def hist_1d(arr, categories):
+            return np.array([(arr == c).sum() for c in categories])
+
+        counts = np.apply_along_axis(
+            hist_1d, axis=1, arr=buffer.numpy(), categories=categories
+        )
+        if type == TYPE_VALID:
+            counts = counts.sum(axis=0, keepdims=True)
+        empirical_probabilities = counts / counts.sum(axis=-1).reshape(-1, 1)
+        return empirical_probabilities
+
+    def plot_train_probabilities(self, empirical_probabilities, categories):
+        indices = random.sample(range(empirical_probabilities.shape[0]), 3)
+
+        sample_1 = empirical_probabilities[indices[0]]
+        sample_2 = empirical_probabilities[indices[1]]
+        sample_3 = empirical_probabilities[indices[2]]
+
+        fig, axs = plt.subplots(3, 1)
+        fig.set_size_inches(15, 10)
+
+        axs[0].bar(
+            categories,
+            height=sample_1,
+            alpha=0.5,
+            label=f"Estimated probabilities for encoding {indices[0]}",
+        )
+        axs[0].legend()
+        axs[0].set_xticks(categories)
+
+        axs[1].bar(
+            categories,
+            height=sample_2,
+            alpha=0.5,
+            label=f"Estimated probabilities for encoding {indices[1]}",
+        )
+        axs[1].legend()
+        axs[1].set_xticks(categories)
+
+        axs[2].bar(
+            categories,
+            height=sample_3,
+            alpha=0.5,
+            label=f"Estimated probabilities for encoding {indices[2]}",
+        )
+        axs[2].legend()
+        axs[2].set_xticks(categories)
+
+        fig.savefig(f"train.png", dpi=fig.dpi)
+        # plt.show()
+
+    def plot_valid_probabilities(self, empirical_probaiblities, categories):
+        fig, axs = plt.subplots(1, 1)
+        fig.set_size_inches(10, 7)
+
+        axs.bar(categories, empirical_probaiblities, alpha=0.5, color="r")
+        axs.set_xticks(categories)
+
+        fig.savefig(f"valid.png", dpi=fig.dpi)
+        # plt.show()
+
+    def _evaluate_once(self, iterator=None):
         self._model.eval()
 
-        data = next(iter(self._data_stream.validation_loader))
+        if iterator is None:
+            iterator = iter(self._data_stream.validation_loader)
+
+        data = next(iterator)
 
         preprocessed_audio = data["preprocessed_audio"].to(self._device)
         valid_originals = data["input_features"].to(self._device)
