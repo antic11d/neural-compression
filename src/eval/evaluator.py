@@ -63,6 +63,7 @@ class Evaluator(object):
         entropy = self.calculate_entropy(train_empirical_probabilities)
         ic = self.calculate_ic(valid_empirical_probabilities)
 
+        # Print statistics
         print("Baseline: ", baseline)
         print("Entropy: ", entropy)
         print("IC: ", ic)
