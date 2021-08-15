@@ -22,7 +22,6 @@ def main(opts):
     datastream = VCTKFeaturesLoader(config["vctk_path"], config, cuda_available)
     evaluator = Evaluator(device, model, datastream, config)
     eval_dict = evaluator.evaluate()
-    print(eval_dict["dtw_distance"])
     return eval_dict
 
 

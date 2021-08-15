@@ -142,3 +142,4 @@ data/vctk
 train.png
 valid.png
 pretrained
+config/

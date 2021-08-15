@@ -37,10 +37,6 @@ class Evaluator(object):
         self._model.eval()
         evaluation_entry = self._evaluate_once()
 
-        dtw_distance = self._dtw_distance(
-            evaluation_entry["valid_originals"],
-            evaluation_entry["valid_reconstructions"],
-        )
         encoding_indices_dim = evaluation_entry["encoding_indices"].shape[0]
         embedding_dim = evaluation_entry["encodings"].shape[-1]
         categories = list(range(embedding_dim))
@@ -61,12 +57,14 @@ class Evaluator(object):
 
         baseline = encoding_indices_dim * np.log2(embedding_dim)
         entropy = self.calculate_entropy(train_empirical_probabilities)
-        ic = self.calculate_ic(valid_empirical_probabilities)
+        bitrate = self.calculate_bitrate(valid_empirical_probabilities)
+        dtw_distance = self.calculate_avg_dtw(NUM_EVALS=1_000)
 
         # Print statistics
         print("Baseline: ", baseline)
         print("Entropy: ", entropy)
-        print("IC: ", ic)
+        print("Bitrate: ", bitrate)
+        print("Avg dtw: ", dtw_distance)
 
         self.plot_train_probabilities(train_empirical_probabilities, categories)
         self.plot_valid_probabilities(valid_empirical_probabilities, categories)
@@ -79,8 +77,20 @@ class Evaluator(object):
         neg_logs = -np.log2(train_empirical_probabilities + 1e-6)
         return np.multiply(train_empirical_probabilities, neg_logs).sum(axis=-1).sum()
 
-    def calculate_ic(self, valid_empirical_probabilities):
+    def calculate_bitrate(self, valid_empirical_probabilities):
         return (-np.log2(valid_empirical_probabilities + 1e-6)).sum()
+
+    def calculate_avg_dtw(self, NUM_EVALS=1_000):
+        self._model.eval()
+        iterator = iter(self._data_stream.validation_loader)
+        dtw_distance = 0
+        for i in range(NUM_EVALS):
+            evaluation_entry = self._evaluate_once(iterator=iterator)
+            dtw_distance += self._dtw_distance(
+                evaluation_entry["valid_originals"],
+                evaluation_entry["valid_reconstructions"],
+            )
+        return dtw_distance / NUM_EVALS
 
     def _dtw_distance(self, mfcc1, mfcc2):
         dist, _, _, _ = dtw(
