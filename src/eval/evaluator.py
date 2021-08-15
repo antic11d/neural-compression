@@ -15,6 +15,7 @@ from ..utils.misc import (
     plot_pcolormesh,
     compute_unified_time_scale,
 )
+import tikzplotlib
 
 TYPE_VALID = "Validation set"
 TYPE_TRAIN = "Training set"
@@ -66,8 +67,7 @@ class Evaluator(object):
         print("Bitrate: ", bitrate)
         print("Avg dtw: ", dtw_distance)
 
-        self.plot_train_probabilities(train_empirical_probabilities, categories)
-        self.plot_valid_probabilities(valid_empirical_probabilities, categories)
+        self.plot_probabilities(train_empirical_probabilities, valid_empirical_probabilities, categories)
 
         evaluation_entry["dtw_distance"] = dtw_distance
         self._compute_comparison_plot(evaluation_entry)
@@ -128,26 +128,22 @@ class Evaluator(object):
         empirical_probabilities = counts / counts.sum(axis=-1).reshape(-1, 1)
         return empirical_probabilities
 
-    def plot_train_probabilities(self, empirical_probabilities, categories):
-        idx = np.random.randint(empirical_probabilities.shape[0])
-        sample = empirical_probabilities[idx]
+    def plot_probabilities(self, train_empirical_probabilities, valid_empirical_probabilities, categories):
+        idx = np.random.randint(train_empirical_probabilities.shape[0])
+        sample = train_empirical_probabilities[idx]
 
-        fig, axs = plt.subplots(1, 1)
-        fig.set_size_inches(15, 10)
+        fig, axs = plt.subplots(1, 2)
+        fig.set_size_inches(20, 13)
 
-        axs.bar(categories, sample, alpha=0.5, color="b")
-        axs.set_xticks(categories)
+        axs[0].bar(categories, sample, alpha=0.5)
+        axs[0].set_xticks(categories)
 
-        fig.savefig(f"train.png", dpi=fig.dpi)
+        axs[1].bar(categories, valid_empirical_probabilities, alpha=0.5, color="r")
+        axs[1].set_xticks(categories)
 
-    def plot_valid_probabilities(self, empirical_probaiblities, categories):
-        fig, axs = plt.subplots(1, 1)
-        fig.set_size_inches(15, 10)
+        tikzplotlib.clean_figure()
+        tikzplotlib.save("emb_distr.tex")
 
-        axs.bar(categories, empirical_probaiblities, alpha=0.5, color="r")
-        axs.set_xticks(categories)
-
-        fig.savefig(f"valid.png", dpi=fig.dpi)
 
     def _evaluate_once(self, iterator=None):
         self._model.eval()
