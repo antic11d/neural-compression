@@ -144,6 +144,7 @@ valid.png
 train.tex
 valid.tex
 emb_distr.tex
+evaluation-comparison-plot*
 
 pretrained
 config/

@@ -294,5 +294,8 @@ class Evaluator(object):
             axis=axs[5],
         )
 
-        plot_name = "evaluation-comparison-plot.png"
-        logger.save_plot(fig, plot_name)
+        # plot_name = "evaluation-comparison-plot.tex"
+        # logger.save_plot(fig, plot_name + ".png")
+
+        tikzplotlib.clean_figure()
+        tikzplotlib.save("evaluation-comparison-plot.tex")
