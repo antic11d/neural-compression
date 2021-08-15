@@ -129,54 +129,25 @@ class Evaluator(object):
         return empirical_probabilities
 
     def plot_train_probabilities(self, empirical_probabilities, categories):
-        indices = random.sample(range(empirical_probabilities.shape[0]), 3)
+        idx = np.random.randint(empirical_probabilities.shape[0])
+        sample = empirical_probabilities[idx]
 
-        sample_1 = empirical_probabilities[indices[0]]
-        sample_2 = empirical_probabilities[indices[1]]
-        sample_3 = empirical_probabilities[indices[2]]
-
-        fig, axs = plt.subplots(3, 1)
+        fig, axs = plt.subplots(1, 1)
         fig.set_size_inches(15, 10)
 
-        axs[0].bar(
-            categories,
-            height=sample_1,
-            alpha=0.5,
-            label=f"Estimated probabilities for encoding {indices[0]}",
-        )
-        axs[0].legend()
-        axs[0].set_xticks(categories)
-
-        axs[1].bar(
-            categories,
-            height=sample_2,
-            alpha=0.5,
-            label=f"Estimated probabilities for encoding {indices[1]}",
-        )
-        axs[1].legend()
-        axs[1].set_xticks(categories)
-
-        axs[2].bar(
-            categories,
-            height=sample_3,
-            alpha=0.5,
-            label=f"Estimated probabilities for encoding {indices[2]}",
-        )
-        axs[2].legend()
-        axs[2].set_xticks(categories)
+        axs.bar(categories, sample, alpha=0.5, color="b")
+        axs.set_xticks(categories)
 
         fig.savefig(f"train.png", dpi=fig.dpi)
-        # plt.show()
 
     def plot_valid_probabilities(self, empirical_probaiblities, categories):
         fig, axs = plt.subplots(1, 1)
-        fig.set_size_inches(10, 7)
+        fig.set_size_inches(15, 10)
 
         axs.bar(categories, empirical_probaiblities, alpha=0.5, color="r")
         axs.set_xticks(categories)
 
         fig.savefig(f"valid.png", dpi=fig.dpi)
-        # plt.show()
 
     def _evaluate_once(self, iterator=None):
         self._model.eval()
