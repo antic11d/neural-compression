@@ -48,7 +48,7 @@ class Evaluator(object):
             encoding_indices_dim=encoding_indices_dim,
             NUM_EVALS=1_000,
         )
-
+        
         valid_empirical_probabilities = self.calculate_empirical_probs(
             categories=categories,
             type=TYPE_VALID,
