@@ -3,7 +3,6 @@ import random
 import os
 import yaml
 import numpy as np
-import soundfile
 import librosa
 import torch
 import matplotlib.pyplot as plt

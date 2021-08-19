@@ -36,15 +36,9 @@ class WavenetTrainer(BaseTrainer):
 
         self._optimizer.zero_grad()
 
-        (
-            reconstructed_x,
-            x_dec,
-            vq_loss,
-            losses,
-            perplexity,
-            encoding_indices,
-            concatenated_quantized,
-        ) = self._model(source, data["one_hot"], speaker_id)
+        (reconstructed_x, _, vq_loss, losses, perplexity, _, _) = self._model(
+            source, data["one_hot"], speaker_id
+        )
 
         reconstruction_loss = self._criterion(
             reconstructed_x.squeeze(), target.squeeze()

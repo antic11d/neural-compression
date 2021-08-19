@@ -1,5 +1,3 @@
-# from modules.jitter import Jitter
-# from speech_utils.global_conditioning import GlobalConditioning
 from .modules import (
     ResidualStack,
     Conv1DBuilder,
@@ -11,7 +9,6 @@ from src.utils.log import Logger
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
-import numpy as np
 
 
 class DeconvolutionalDecoder(nn.Module):
@@ -42,7 +39,6 @@ class DeconvolutionalDecoder(nn.Module):
         if self._use_jitter:
             self._jitter = Jitter(jitter_probability)
 
-        # FIXME hardcoded
         in_channels = (
             in_channels + 40 if self._use_speaker_conditioning else in_channels
         )
