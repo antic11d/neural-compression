@@ -1,6 +1,5 @@
 from argparse import ArgumentParser
 import torch
-from torch.utils import data
 from src.utils.log import Logger
 from src.utils.misc import ConfigParser
 from src.models.conv_vq_vae import ConvolutionalVQVAE
@@ -40,7 +39,7 @@ def main(opts):
     # TODO: Evaluation
     evaluation_info = {}
 
-    return {}
+    return training_info
 
 
 if __name__ == "__main__":
@@ -51,4 +50,4 @@ if __name__ == "__main__":
         default="../config/test.yaml",
     )
     opts = parser.parse_args()
-    evaluation_metrics = main(opts)
+    _ = main(opts)

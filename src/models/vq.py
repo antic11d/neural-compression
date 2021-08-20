@@ -124,7 +124,6 @@ class VectorQuantizer(nn.Module):
 
         # Quantize and unflatten
         quantized = torch.matmul(encodings, self._embedding.weight).view(input_shape)
-        # TODO: Check if the more readable self._embedding.weight.index_select(dim=1, index=encoding_indices) works better
 
         concatenated_quantized = (
             self._embedding.weight[torch.argmin(distances, dim=1).detach().cpu()]

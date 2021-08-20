@@ -135,7 +135,7 @@ dmypy.json
 data/
 .DS_Store
 notebooks/
-logs/
+logs*/
 
 data/vctk
 
