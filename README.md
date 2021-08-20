@@ -1,4 +1,9 @@
 # Towards Neural Audio Compression
-Team project on the course Data Compression with Deep Probabilistic Models SS 20/21 @ University of Tuebingen
+Team project on the course [Data Compression with Deep Probabilistic Models](https://robamler.github.io/teaching/compress21/?fbclid=IwAR31Xj8FWNvDEalRqjjXr0Q4jncGnU3NpWD_QO2soU2HtTdpcMlgk7wPZ1w) SS 20/21 @ University of Tuebingen
 
-More details about the method and experiments can be found in the [report](assets/DimitrijeAntic_ZafirStojanovski_JovanCicvaric.pdf).
+An extensive report containing detailed method descriptions, ablation studies, and implementation some of the details can be found [here](assets/DimitrijeAntic_ZafirStojanovski_JovanCicvaric.pdf).
+
+### Team:
+* [Dimitrije Antic](https://github.com/antic11d/)
+* [Zafir Stojanovski](https://github.com/zafir-stojanovski/)
+* [Jovan Cicvaric](https://github.com/cile98)
